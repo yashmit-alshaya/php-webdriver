@@ -42,7 +42,6 @@ class CurlService implements CurlServiceInterface
             'Accept: application/json;charset=UTF-8',
             "x-atest-id: {$this->getBehatSecretKey()}"
         );
-var_dump($customHeaders);
 print_r($customHeaders);
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -96,10 +95,13 @@ print_r($customHeaders);
             curl_setopt($curl, $option, $value);
         }
 
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $customHeaders);
 
         $rawResult = trim(curl_exec($curl));
-print_r($rawResult);
+
+        $info = curl_getinfo($curl);
+        print_r($info['request_header']);
         $info = curl_getinfo($curl);
         $info['request_method'] = $requestMethod;
         $info['errno'] = curl_errno($curl);
