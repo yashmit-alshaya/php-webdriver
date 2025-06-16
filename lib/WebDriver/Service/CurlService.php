@@ -99,7 +99,7 @@ print_r($customHeaders);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $customHeaders);
 
         $rawResult = trim(curl_exec($curl));
-
+print_r($rawResult);
         $info = curl_getinfo($curl);
         $info['request_method'] = $requestMethod;
         $info['errno'] = curl_errno($curl);
