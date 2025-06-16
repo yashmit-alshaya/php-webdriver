@@ -40,9 +40,8 @@ class CurlService implements CurlServiceInterface
         $customHeaders = array(
             'Content-Type: application/json;charset=UTF-8',
             'Accept: application/json;charset=UTF-8',
-            "x-atest-id: {$this->getBehatSecretKey()}"
         );
-print_r($customHeaders);
+
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
@@ -95,13 +94,10 @@ print_r($customHeaders);
             curl_setopt($curl, $option, $value);
         }
 
-        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $customHeaders);
 
         $rawResult = trim(curl_exec($curl));
-        print_r($rawResult);
-        $info = curl_getinfo($curl);
-        print_r($info['request_header']);
+
         $info = curl_getinfo($curl);
         $info['request_method'] = $requestMethod;
         $info['errno'] = curl_errno($curl);
@@ -133,38 +129,5 @@ print_r($customHeaders);
         curl_close($curl);
 
         return array($rawResult, $info);
-    }
-
-    /**
-     * Fetches behat secret key from creds.json file.
-     */
-    private function getBehatSecretKey()
-    {
-        static $key = NULL;
-
-        // Avoid file load everytime.
-        if (isset($key)) {
-            return $key;
-        }
-
-        $env_key = getenv('BEHAT_SECRET_KEY');
-        if ($env_key) {
-            $key = $env_key;
-            return $key;
-        }
-
-        $filename = 'creds.json';
-        $options = getopt('', ['profile:']);
-        $profile_arr = explode('-', $options['profile']);
-        $env = $profile_arr[2];
-        $key = '';
-        if (file_exists($filename)) {
-            $creds = json_decode(file_get_contents($filename), TRUE);
-            $key = $creds[$env]['secret_key'] ?? '';
-            return $key;
-        }
-
-        print 'Behat secret key not available';
-        die();
     }
 }
